@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lv_brower"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50dip"
+        android:background="@drawable/bg"
+        android:gravity="center_vertical"
+        >
+
+        <Button
+            android:layout_width="90dip"
+            android:layout_height="35dip"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dip"
+            android:background="@drawable/selector_button"
+            android:gravity="center"
+            android:onClick="returnLocalShelf"
+            android:text="本地书架"
+            android:textColor="#ffffff" />
+
+        <Button
+            android:layout_width="90dip"
+            android:layout_height="35dip"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dip"
+            android:background="@drawable/selector_button"
+            android:gravity="center"
+            android:onClick="close"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:text="关闭"
+            android:textColor="#ffffff" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" >
+
+        <WebView
+            android:id="@+id/wv_myview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scrollbars="none"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/ll_progress_bar"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible" >
+
+            <ProgressBar
+                style="@android:style/Widget.ProgressBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="正在加载中...." />
+           
+        </LinearLayout>
+         <Button 
+          android:id="@+id/btn_download"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="bottom"
+          android:visibility="gone"
+          android:text="下载"
+        	/>
+    </FrameLayout>
+    
+</LinearLayout>

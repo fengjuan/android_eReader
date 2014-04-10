@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, LoveReaderActivity!</string>
+    <string name="app_name">MiniReader</string>
+  	<string name="no_media_hint">存储介质在设备和 PC 上共同使用，会导致该存储介质在设备上无法被访问</string>
+	<string name="no_media_warning">没有存储介质</string>
+	<string name="dismiss">解除</string>
+	<string name="version">1.0</string>
+	<string name="picker_title_App_Ver_Dir">%1$s%2$s:%3$s</string>
+	<string name="parent_directory">[向上一级]</string>
+	
+	<string name="action_settings">设置</string>
+	<string name="title_activity_local">本地图书</string>
+	<string name="title_activity_on_line">在线</string>
+	<string name="title_activity_book">我的书架</string>
+	
+	<string name="select_all">全选</string>
+	<string name="select_cancel">取消全选</string>
+	<string name="import_check">添加到书架</string>
+	
+	<string name="m_shupeng_url">http://m.shupeng.com</string>
+	
+	<string name="progress_o">当前进度：20%</string>
+	<string name="progress">当前进度：%s</string>
+	</resources>
