@@ -32,6 +32,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Gallery;
@@ -230,6 +231,7 @@ public class ReadBookActivity extends Activity {
 		
 		switch (item.getItemId()) { 
 		
+		//更改字体大小
 		case R.id.fontsize:
 			new AlertDialog.Builder(this)
 			.setTitle("请选择")
@@ -245,6 +247,7 @@ public class ReadBookActivity extends Activity {
 			).setNegativeButton("取消", null).show();
 			break;
 			
+		//更改阅读背景
 		case R.id.background:
 			AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 			dialog.setTitle("请选择背景");
@@ -371,7 +374,8 @@ public class ReadBookActivity extends Activity {
 			
 			mContext.startActivity(intent);
 			break;
-			
+		
+		//书签
 		case R.id.book_mark:
 			mMarkDBHelper = new BookMarkDBHelper(mContext);
 			final BookMark bookMark = new BookMark(mBook.bookname, mPagefactory.getOneLine(), mPagefactory.getCurPostionBeg());
@@ -385,7 +389,8 @@ public class ReadBookActivity extends Activity {
 				markLayout.setBackgroundColor(Color.WHITE);
 				
 				ListView lvMark = new ListView(mContext);
-				lvMark.setAdapter(new ArrayAdapter(mContext, android.R.layout.select_dialog_item, markList));
+				ArrayAdapter adapter = new ArrayAdapter(mContext, android.R.layout.select_dialog_item, markList);
+				lvMark.setAdapter(adapter);
 				markLayout.addView(lvMark);
 				
 				Dialog markDialog = new AlertDialog.Builder(mContext)
@@ -405,8 +410,11 @@ public class ReadBookActivity extends Activity {
 							
 						}
 					}).create();;
-				lvMark.setOnItemClickListener(new MarkClickListener(markList, markDialog));
 				markDialog.show();
+				
+				lvMark.setOnItemClickListener(new MarkClickListener(markList, markDialog));
+				lvMark.setOnItemLongClickListener(new MarkLongClickListener(markList,markDialog));
+				
 			}
 			
 			break;
@@ -439,6 +447,7 @@ public class ReadBookActivity extends Activity {
 		
 	}
 	
+	//书签列表监听
 	class MarkClickListener implements OnItemClickListener{
 		
 		private List<BookMark> markList;
@@ -464,6 +473,45 @@ public class ReadBookActivity extends Activity {
 			//刷新View
 			mPageWidget.postInvalidate();
 			markDialog.dismiss();
+		}
+		
+	}
+	
+	//长按书签事件监听类
+	class MarkLongClickListener implements OnItemLongClickListener {
+		private List<BookMark> markList;
+		private Dialog markDialog;
+		public MarkLongClickListener(List<BookMark> markList, Dialog markDialog) {
+			this.markList = markList;
+			this.markDialog = markDialog;
+		}
+		
+		@Override
+		public boolean onItemLongClick(AdapterView<?> parent, View view,
+				int position, long id) {
+			final BookMark bookMark = markList.get(position);
+			final int pos = position;
+			markDialog.dismiss();
+			Dialog dialog = new AlertDialog.Builder(mContext).setTitle("删除书签")
+								.setMessage("确定删除此书签？")
+								.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+									
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										mMarkDBHelper.deleteMark(bookMark.getId());
+										Toast.makeText(mContext, "删除成功" , Toast.LENGTH_SHORT).show();
+										markList.remove(pos);
+										
+									}
+								}).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+									
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										
+									}
+								}).create();
+			dialog.show();
+			return false;
 		}
 		
 	}
