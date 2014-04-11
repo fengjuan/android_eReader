@@ -6,6 +6,10 @@
 	    android:title="字体"
 	    android:icon="@drawable/menu_font_size">  
     </item>
+    <item android:id="@+id/background"
+	    android:title="背景"
+	    android:icon="@drawable/menu_font_size"> 
+	</item>
     <item 
     	android:id="@+id/nowprogress"
 	    android:title="跳转"

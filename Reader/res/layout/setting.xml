@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/default_background_color"
+    android:orientation="vertical" >
+      <TextView 
+  			android:text="@string/setting_txt_title" 
+  			android:layout_height="wrap_content" 
+  			android:layout_width="wrap_content" 
+  			android:textColor="@color/filelist_text_color"
+  			android:layout_gravity="center"
+  			android:textSize="24sp" /> 
+  		<TextView 
+  			android:text="@string/setting_txt_font_color" 
+  			android:layout_height="wrap_content" 
+  			android:textColor="@color/filelist_text_color"
+  			android:layout_width="wrap_content" /> 
+		<Spinner android:id="@+id/setting_spinner_font_color"
+			android:layout_height="wrap_content" 
+			android:layout_width="fill_parent" /> 
+		<TextView 
+  			android:text="@string/setting_txt_bg_color" 
+  			android:layout_height="wrap_content" 
+  			android:textColor="@color/filelist_text_color"
+  			android:layout_width="wrap_content" /> 
+		<Spinner android:id="@+id/setting_spinner_bg_color" 
+			android:layout_height="wrap_content" 
+			android:layout_width="fill_parent" /> 	
+		<TextView 
+  			android:text="@string/setting_txt_font_size" 
+  			android:layout_height="wrap_content" 
+  			android:textColor="@color/filelist_text_color"
+  			android:layout_width="wrap_content" /> 				
+		<SeekBar 
+			android:id="@+id/setting_seekbar_font_size" 
+			android:layout_width="fill_parent"  
+        	android:layout_height="wrap_content" 
+        	android:max="10"  
+        	android:progress="5" 
+        	android:secondaryProgress="10" />  		
+		<TextView 
+  			android:text="@string/setting_txt_scr_brightness" 
+  			android:layout_height="wrap_content" 
+  			android:textColor="@color/filelist_text_color"
+  			android:layout_width="wrap_content" /> 				
+		<SeekBar 
+			android:id="@+id/setting_seekbar_scr_brightness" 
+			android:layout_width="fill_parent"  
+        	android:layout_height="wrap_content" 
+        	android:max="10"  
+        	android:progress="10" 
+        	android:secondaryProgress="10" />  
+        	
+		<TextView 
+			android:id="@+id/setting_textview_setting_prev"
+  			android:text="@string/setting_txt_setting_prev" 
+  			android:layout_height="fill_parent" 
+  			android:layout_width="fill_parent" 
+  			android:layout_marginTop="10dip"
+  			android:singleLine="false" 
+  			android:scrollbars="vertical" />  
+
+</LinearLayout>

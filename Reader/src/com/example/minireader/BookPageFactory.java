@@ -1,7 +1,9 @@
 
 package com.example.minireader;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -24,7 +26,7 @@ public class BookPageFactory {
 	private File book_file = null;
 	private MappedByteBuffer m_mbBuf = null;
 	private int m_mbBufLen = 0;
-	private int m_mbBufBegin = 50; //50
+	private int m_mbBufBegin = 4; //50
 	private int m_mbBufEnd = 0;
 	private String m_strCharsetName = "GBK";
 	private Bitmap m_book_bg = null;
@@ -33,8 +35,7 @@ public class BookPageFactory {
 
 	private Vector<String> m_lines = new Vector<String>();
 
-	private int m_fontSize = 40;
-	private int r_fontSize = 30;
+	private int m_fontSize = 30;
 	private int m_textColor = Color.BLACK;
 	private int m_backColor = 0xffff9e85; // 背景颜色
 	private int marginWidth = 15; // 左右与边缘的距离
@@ -46,12 +47,9 @@ public class BookPageFactory {
 	private float mVisibleWidth; // 绘制内容的宽
 	private boolean m_isfirstPage, m_islastPage;
 	private int b_FontSize = 16;//底部文字大小
-	private int e_fontSize = 5;
 	private int spaceSize = 20;//行间距大小
 	private int curProgress = 0;//当前的进度
 	private String fileName = "";
-
-	// private int m_nLineSpaceing = 5;
 
 	private Paint mPaint;
 	private Paint bPaint;//底部文字绘制
@@ -62,27 +60,29 @@ public class BookPageFactory {
 		// TODO Auto-generated constructor stub
 		mWidth = w;
 		mHeight = h;
+		//画笔设置
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mPaint.setTextAlign(Align.LEFT);
-		//mPaint.setTextSize(30);
 		mPaint.setTextSize(m_fontSize);
 		mPaint.setColor(m_textColor);
 	
-		//mPaint.setTextSkewX(0.1f);//设置斜体
 		mVisibleWidth = mWidth - marginWidth * 2;
 		mVisibleHeight = mHeight - marginHeight * 2 - youmiHeight;
 		int totalSize = m_fontSize+spaceSize;
 		mLineCount = (int) ((mVisibleHeight)/ totalSize); // 可显示的行数
+		
 		//底部文字绘制
 		bPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		bPaint.setTextAlign(Align.LEFT);
 		bPaint.setTextSize(b_FontSize);
 		bPaint.setColor(m_textColor);
+		
 		//行间距设置
 		spactPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		spactPaint.setTextAlign(Align.LEFT);
 		spactPaint.setTextSize(spaceSize);
 		spactPaint.setColor(m_textColor);
+		
 		//
 		titlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		titlePaint.setTextAlign(Align.LEFT);
@@ -91,13 +91,16 @@ public class BookPageFactory {
 		
 	}
 
+	//打开电子书
 	public void openbook(String strFilePath) {
 		try {
 			book_file = new File(strFilePath);
 			long lLen = book_file.length();
+			//得到文件长度
 			m_mbBufLen = (int) lLen;
 			m_mbBuf = new RandomAccessFile(book_file, "r").getChannel().map(
 					FileChannel.MapMode.READ_ONLY, 0, lLen);
+			m_strCharsetName = getFilecharset(book_file);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -106,6 +109,51 @@ public class BookPageFactory {
 			e.printStackTrace();
 		}
 	}
+	
+	 /**
+	  * 判断文件的编码
+	  * 
+	  * @param sourceFile 需要判断编码的文件 
+	  * @return String 文件编码
+	  */
+	protected  String getFilecharset(File sourceFile) {
+	  String charset = "GBK";
+	  byte[] first3Bytes = new byte[3];
+	  try {
+	   
+	   BufferedInputStream bis = new BufferedInputStream(
+	     new FileInputStream(sourceFile));
+	   bis.mark(0);
+	   
+	   int read = bis.read(first3Bytes, 0, 3);
+	   System.out.println("字节大小："+read);
+	   
+	   if (read == -1) {
+		   charset ="GBK"; //文件编码为 ANSI
+	   } else if (first3Bytes[0] == (byte) 0xFF
+	     && first3Bytes[1] == (byte) 0xFE) {
+	    
+	    charset = "UTF-16LE"; //文件编码为 Unicode
+	   } else if (first3Bytes[0] == (byte) 0xFE
+	     && first3Bytes[1] == (byte) 0xFF) {
+	    
+	    charset = "UTF-16BE"; //文件编码为 Unicode big endian
+	   } else if (first3Bytes[0] == (byte) 0xEF
+	     && first3Bytes[1] == (byte) 0xBB
+	     && first3Bytes[2] == (byte) 0xBF) {
+	    
+	    charset = "UTF-8"; //文件编码为 UTF-8
+	   }
+	   bis.reset();
+	   
+	   bis.close();
+	  } catch (Exception e) {
+	   e.printStackTrace();
+	  }
+	  System.out.println("文件格式为：" + charset);
+	  return charset;
+	}
+
 
 	//读取下一段
 	protected byte[] readParagraphBack(int nFromPos) {
@@ -339,8 +387,6 @@ public class BookPageFactory {
 		int nPercentWidth = (int) bPaint.measureText("99.9%") + 1;
 		c.drawText(strPercent, mWidth - nPercentWidth, mHeight-5, bPaint);
 		
-		//c.drawText("噬魂天书", mWidth/2, mHeight-5, mPaint);
-		//int nTimeWidth = (int)mPaint.measureText("12:12") + 1;
 		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");      
 		Date curDate = new Date(System.currentTimeMillis());//获取当前时间      
 		String str = formatter.format(curDate);  
@@ -397,13 +443,14 @@ public class BookPageFactory {
 		return curProgress;
 	}
 	public String getOneLine() {
-		return m_lines.toString().substring(0, 10);
+		return m_lines.get(0);
 	}
 	
 	public void changBackGround(int color) {
 		mPaint.setColor(color);
 	}
 	
+
 	public void setFontSize(int size) {
 		m_fontSize = size;
 		mPaint.setTextSize(size);

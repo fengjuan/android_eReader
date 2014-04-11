@@ -1,5 +1,6 @@
 package com.example.minireader.sqlite;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,15 +11,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.minireader.entity.BookInfo;
-import com.example.minireader.entity.SetupInfo;
 
 public class DbHelper extends SQLiteOpenHelper {
 	private final static String DATABASE_NAME = "minireader_db";	//数据库名
 	private final static int DATABASE_VERSION = 1;				//版本号
+	
 	private final static String TABLE_NAME = "book_shelf";		//表名
-	private final static String TABLE_SETUP = "book_setup";
+	private final static String TABLE_SETUP = "book_setupinfo";
+	
+	
 	public final static String FIELD_ID = "_id";
-	public final static String INDEX_NAME_ON_BOOKMARK = "uq_bookname_index";
+	public final static String INDEX_NAME_ON_BOOKMARK = "uq_bookshelf_index";
 
 	public DbHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,10 +45,9 @@ public class DbHelper extends SQLiteOpenHelper {
 		StringBuffer setupTb = new StringBuffer();
 		setupTb.append("create table ").append(TABLE_SETUP)
 			   .append("(_id integer primary key autoincrement,")	
-			   .append(" fontsize text,")  
-			   .append(" rowspace text,")  
-			   .append(" columnspace text);");
-		
+			   .append("fontsize text,") 
+			   .append("fontcolor text,")
+				.append("background text)");
 		db.execSQL(setupTb.toString());
 		
 		//笔记表
@@ -57,6 +59,15 @@ public class DbHelper extends SQLiteOpenHelper {
 					.append("noteContent text)");
 		db.execSQL(bookNoteTb.toString());
 		
+		//书签表
+		StringBuffer bookMarkTb = new StringBuffer();
+		bookMarkTb.append("create table book_mark")
+					.append("(_id integer primary key autoincrement,")
+					.append("bookName text,")
+					.append("markName text,")
+					.append("begin integer)");
+		db.execSQL(bookMarkTb.toString());
+
 		//添加唯一索引
 		String bookIndexSql="CREATE UNIQUE INDEX IF NOT EXISTS " + INDEX_NAME_ON_BOOKMARK + " ON " + TABLE_NAME + " (bookname)";
 		String noteIndexSql="CREATE UNIQUE INDEX IF NOT EXISTS uq_booknote_index ON book_note(bookName)";
@@ -65,7 +76,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		db.execSQL(noteIndexSql);
 		
 		//默认设置
-		String setup = "insert into " + TABLE_SETUP + "(fontsize,rowspace,columnspace) values('6','0','0')";
+		String setup = "insert into " + TABLE_SETUP + "(fontsize,fontcolor,background) values('3','0','1')";
 		db.execSQL(setup);
 	}
 
@@ -113,23 +124,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		return book;
 	}
 	
-	/**
-	 * 查询设置相关信息
-	 * @return
-	 */
-	public SetupInfo getSetupInfo(){
-		SetupInfo setup = new SetupInfo();
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = null;
-		cursor = db.query(TABLE_SETUP, null, null, null, null, null, null);
-		cursor.moveToPosition(0);
-		setup.id = cursor.getInt(0); 
-		setup.fontsize = cursor.getInt(1);
-		setup.rowspace = cursor.getInt(2);
-		setup.columnspace = cursor.getInt(3);
-		db.close();
-		return setup;
-	}
+	
 	
 	/**
 	 * 得到所有的电子书
@@ -211,24 +206,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		ContentValues cv = new ContentValues();
 		cv.put("bookname", filename);
 		cv.put("bookmark", bookmark);
+		cv.put("date", new Date(System.currentTimeMillis()).toString());
 		db.update(TABLE_NAME, cv, where, whereValue);
-	}
-	
-	/**
-	 * 更新设置
-	 * @param id
-	 * @param fontsize
-	 * @param rowspace
-	 * @param columnspace
-	 */
-	public void updateSetup(int id, String fontsize, String rowspace,String columnspace) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		String where = FIELD_ID + "=?";
-		String[] whereValue = { Integer.toString(id) };
-		ContentValues cv = new ContentValues();
-		cv.put("fontsize", fontsize);
-		cv.put("rowspace", rowspace);
-		cv.put("columnspace", columnspace);
-		db.update(TABLE_SETUP, cv, where, whereValue);
 	}
 }

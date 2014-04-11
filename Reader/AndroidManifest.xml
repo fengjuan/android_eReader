@@ -35,6 +35,7 @@
         <activity android:name="com.example.minireader.NoteAcitvity"></activity>
         
         <activity android:name="com.example.minireader.NoteListAcitvity"></activity>
+         <activity android:name="com.example.minireader.SettingActivity"></activity>
         
         <activity android:name="com.artifex.mupdfdemo.MuPDFActivity"
             	android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >

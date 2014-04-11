@@ -22,4 +22,13 @@
 	
 	<string name="progress_o">当前进度：20%</string>
 	<string name="progress">当前进度：%s</string>
+	
+	 <!-- 用户设定定义  -->
+    <string name="setting_txt_title">用户设定</string>
+    <string name="setting_txt_font_color">字体颜色</string>
+    <string name="setting_txt_bg_color">背景颜色</string>
+    <string name="setting_txt_font_size">字体大小</string>
+    <string name="setting_txt_scr_brightness">屏幕亮度</string>
+    <string name="setting_txt_setting_prev">这是一段测试文字，表示当前的用户设定。</string>
+	
 	</resources>
