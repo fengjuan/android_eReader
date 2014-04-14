@@ -24,7 +24,7 @@ public class MyActivityGroupProjectDemo extends ActivityGroup {
 	private GridView mGridviewToolbar; 								// 定义GridView工具条
 	private ToolBarGVAdapter mToolbarAdapter = null; 							// 图片适配器
 	private LinearLayout mContentLayout = null; 							// 显示内容的布局管理器
-	private String mTexts[] = new String[] {"本地", "书架", "在线", "笔记"}; 								// 图片显示资源ID
+	private String mTexts[] = new String[] {"书架", "本地", "在线", "笔记"}; 								// 图片显示资源ID
 	private int mWidth = 0 ;											// 保存每个菜单项的图片宽度
 	private int mHeight = 0 ;										// 保存菜单项的高度
 	private Intent mIntent = null;									// 要操作的Intent
@@ -71,18 +71,18 @@ public class MyActivityGroupProjectDemo extends ActivityGroup {
 	 * 根据ID打开指定的Activity
 	 * @param id GridView选中项的序号
 	 */
-	private void switchActivity(int id) {							// 切换视图
+	public void switchActivity(int id) {							// 切换视图
 		this.mToolbarAdapter.setFocus(id); 									// 选中项获得高亮
 		this.mContentLayout.removeAllViews();								// 先清除容器中所有View
 		
 		switch (id) {												// 根据操作实例化Intent
 		case 0: 													// 指定操作的Intent
 			this.mIntent = new Intent(MyActivityGroupProjectDemo.this,
-					ChooseFileActivity.class);
+					BookShelfActivity.class);
 			break;
 		case 1: 													// 指定操作的Intent
 			this.mIntent = new Intent(MyActivityGroupProjectDemo.this,
-					BookShelfActivity.class);
+					ChooseFileActivity.class);
 			break;
 		case 2: 													
 			this.mIntent = new Intent(MyActivityGroupProjectDemo.this,
@@ -104,12 +104,11 @@ public class MyActivityGroupProjectDemo extends ActivityGroup {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) { 					// 如果是手机上的返回键
+		
+		if(keyCode == KeyEvent.KEYCODE_BACK && !getLocalActivityManager().getCurrentId().equals("subActivity0")){
 			this.mGridviewToolbar.setVisibility(View.VISIBLE);
-		} 
-		if(!getLocalActivityManager().getCurrentId().equals("subActivity1")){
-			switchActivity(1);
-            return true;
+			switchActivity(0);
+            return false;
 		}
 		return getLocalActivityManager().getCurrentActivity().onKeyDown(keyCode, event);
 	}

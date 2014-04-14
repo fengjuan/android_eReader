@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.artifex.mupdfdemo.MuPDFActivity;
 import com.example.minireader.adapter.BookShelfGVAdapter;
 import com.example.minireader.entity.BookInfo;
+import com.example.minireader.file.ChooseFileActivity;
 import com.example.minireader.online.WebViewActivity;
 import com.example.minireader.sqlite.DbHelper;
 
@@ -58,9 +60,14 @@ public class BookShelfActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.book, menu);
         return true;
+    }
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    	MyActivityGroupProjectDemo parent = (MyActivityGroupProjectDemo)getParent();
+    	parent.switchActivity(1);
+    	return super.onMenuItemSelected(featureId, item);
     }
     
 
@@ -160,6 +167,9 @@ public class BookShelfActivity extends Activity {
 		if(event.getKeyCode() == KeyEvent.KEYCODE_BACK ) {
 			exitDialog();
 			return true;
+		}
+		if(keyCode == KeyEvent.KEYCODE_MENU) {
+			super.openOptionsMenu();
 		}
     	return super.onKeyDown(keyCode, event);
     }

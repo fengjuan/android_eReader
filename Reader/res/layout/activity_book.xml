@@ -18,5 +18,15 @@
         >
 		 
     </GridView>
+    
+    <TextView 
+        android:id="@id/android:empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="22sp"
+        android:textColor="@android:color/darker_gray"
+        android:text="@string/no_books"
+        
+        />
 
 </LinearLayout>

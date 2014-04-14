@@ -4,6 +4,11 @@
     <string name="app_name">MiniReader</string>
   	<string name="no_media_hint">存储介质在设备和 PC 上共同使用，会导致该存储介质在设备上无法被访问</string>
 	<string name="no_media_warning">没有存储介质</string>
+	<string name="no_notes">你还没有写任何笔记呢~</string>
+	<string name="no_books">书架里面还没有书哦~</string>
+	<string name="import_local_books">导入本地书目</string>
+	
+	
 	<string name="dismiss">解除</string>
 	<string name="version">1.0</string>
 	<string name="picker_title_App_Ver_Dir">%1$s%2$s:%3$s</string>
