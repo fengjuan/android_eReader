@@ -112,6 +112,10 @@ public class WebViewActivity extends Activity {
 		initUI();
 		mWebView.getSettings().setJavaScriptEnabled(true);
 		mWebView.getSettings().setDatabaseEnabled(true);
+		mWebView.getSettings().setUseWideViewPort(true);	//自适应手机屏幕
+		//mWebView.getSettings().setLoadWithOverviewMode(true);
+		mWebView.getSettings().setSupportZoom(true);		//设置支持缩放
+		mWebView.getSettings().setBuiltInZoomControls(true);
 
 		mWebView.requestFocus(View.FOCUS_DOWN);
 		/**
