@@ -20,8 +20,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.util.Log;
 
 public class BookPageFactory {
+	
+	private static final String TAG = "BookPageFactory";
 
 	private File book_file = null;
 	private MappedByteBuffer m_mbBuf = null;
@@ -155,7 +158,146 @@ public class BookPageFactory {
 	}
 
 
-	//读取下一段
+
+	/**
+	 * 向后翻页
+	 * 
+	 * @throws IOException
+	 */
+	public void nextPage() throws IOException {
+		if (m_mbBufEnd >= m_mbBufLen) {
+			m_islastPage = true;
+			return;
+		} else
+			m_islastPage = false;
+		m_lines.clear();
+		m_mbBufBegin = m_mbBufEnd;// 下一页页起始位置=当前页结束位置
+		m_lines = pageDown();
+	}
+	
+	/**
+	 * 画指定页的下一页
+	 * 
+	 * @return 下一页的内容 Vector<String>
+	 */
+	protected Vector<String> pageDown() {
+		mPaint.setTextSize(m_fontSize);
+		mPaint.setColor(m_textColor);
+		String strParagraph = "";
+		Vector<String> lines = new Vector<String>();
+		while (lines.size() < mLineCount && m_mbBufEnd < m_mbBufLen) {
+			byte[] paraBuf = readParagraphForward(m_mbBufEnd);
+			m_mbBufEnd += paraBuf.length;// 每次读取后，记录结束点位置，该位置是段落结束位置
+			try {
+				strParagraph = new String(paraBuf, m_strCharsetName);// 转换成制定GBK编码
+			} catch (UnsupportedEncodingException e) {
+				Log.e(TAG, "pageDown->转换编码失败", e);
+			}
+			String strReturn = "";
+			// 替换掉回车换行符
+			if (strParagraph.indexOf("\r\n") != -1) {
+				strReturn = "\r\n";
+				strParagraph = strParagraph.replaceAll("\r\n", "");
+			} else if (strParagraph.indexOf("\n") != -1) {
+				strReturn = "\n";
+				strParagraph = strParagraph.replaceAll("\n", "");
+			}
+
+			if (strParagraph.length() == 0) {
+				lines.add(strParagraph);
+			}
+			while (strParagraph.length() > 0) {
+				// 画一行文字
+				int nSize = mPaint.breakText(strParagraph, true, mVisibleWidth,
+						null);
+				lines.add(strParagraph.substring(0, nSize));
+				strParagraph = strParagraph.substring(nSize);// 得到剩余的文字
+				// 超出最大行数则不再画
+				if (lines.size() >= mLineCount) {
+					break;
+				}
+			}
+			// 如果该页最后一段只显示了一部分，则从新定位结束点位置
+			if (strParagraph.length() != 0) {
+				try {
+					m_mbBufEnd -= (strParagraph + strReturn)
+							.getBytes(m_strCharsetName).length;
+				} catch (UnsupportedEncodingException e) {
+					Log.e(TAG, "pageDown->记录结束点位置失败", e);
+				}
+			}
+		}
+		return lines;
+	}
+
+	/**
+	 * 得到上上页的结束位置
+	 */
+	protected void pageUp() {
+		if (m_mbBufBegin < 0)
+			m_mbBufBegin = 0;
+		Vector<String> lines = new Vector<String>();
+		String strParagraph = "";
+		while (lines.size() < mLineCount && m_mbBufBegin > 0) {
+			Vector<String> paraLines = new Vector<String>();
+			byte[] paraBuf = readParagraphBack(m_mbBufBegin);
+			m_mbBufBegin -= paraBuf.length;// 每次读取一段后,记录开始点位置,是段首开始的位置
+			try {
+				strParagraph = new String(paraBuf, m_strCharsetName);
+			} catch (UnsupportedEncodingException e) {
+				Log.e(TAG, "pageUp->转换编码失败", e);
+			}
+			strParagraph = strParagraph.replaceAll("\r\n", "");
+			strParagraph = strParagraph.replaceAll("\n", "");
+			// 如果是空白行，直接添加
+			if (strParagraph.length() == 0) {
+				paraLines.add(strParagraph);
+			}
+			while (strParagraph.length() > 0) {
+				// 画一行文字
+				int nSize = mPaint.breakText(strParagraph, true, mVisibleWidth,
+						null);
+				paraLines.add(strParagraph.substring(0, nSize));
+				strParagraph = strParagraph.substring(nSize);
+			}
+			lines.addAll(0, paraLines);
+		}
+
+		while (lines.size() > mLineCount) {
+			try {
+				m_mbBufBegin += lines.get(0).getBytes(m_strCharsetName).length;
+				lines.remove(0);
+			} catch (UnsupportedEncodingException e) {
+				Log.e(TAG, "pageUp->记录起始点位置失败", e);
+			}
+		}
+		m_mbBufEnd = m_mbBufBegin;// 上上一页的结束点等于上一页的起始点
+		return;
+	}
+
+	/**
+	 * 向前翻页
+	 * 
+	 * @throws IOException
+	 */
+	protected void prePage() throws IOException {
+		if (m_mbBufBegin <= 0) {
+			m_mbBufBegin = 0;
+			m_isfirstPage = true;
+			return;
+		} else
+			m_isfirstPage = false;
+		m_lines.clear();
+		pageUp();
+		m_lines = pageDown();
+	}
+
+	/**
+	 * 读取指定位置的上一个段落
+	 * 
+	 * @param nFromPos
+	 * @return byte[]
+	 */
 	protected byte[] readParagraphBack(int nFromPos) {
 		int nEnd = nFromPos;
 		int i;
@@ -187,7 +329,7 @@ public class BookPageFactory {
 			i = nEnd - 1;
 			while (i > 0) {
 				b0 = m_mbBuf.get(i);
-				if (b0 == 0x0a && i != nEnd - 1) {
+				if (b0 == 0x0a && i != nEnd - 1) {// 0x0a表示换行符
 					i++;
 					break;
 				}
@@ -205,7 +347,12 @@ public class BookPageFactory {
 		return buf;
 	}
 
-	// 读取上一段落
+	/**
+	 * 读取指定位置的下一个段落
+	 * 
+	 * @param nFromPos
+	 * @return byte[]
+	 */
 	protected byte[] readParagraphForward(int nFromPos) {
 		int nStart = nFromPos;
 		int i = nStart;
@@ -241,121 +388,6 @@ public class BookPageFactory {
 			buf[i] = m_mbBuf.get(nFromPos + i);
 		}
 		return buf;
-	}
-
-	//得到下一页数据
-	protected Vector<String> pageDown() {
-		String strParagraph = "";
-		Vector<String> lines = new Vector<String>();
-		while (lines.size() < mLineCount && m_mbBufEnd < m_mbBufLen) {
-			byte[] paraBuf = readParagraphForward(m_mbBufEnd); // 读取一个段落
-			m_mbBufEnd += paraBuf.length;
-			try {
-				strParagraph = new String(paraBuf, m_strCharsetName);
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			String strReturn = "";
-			if (strParagraph.indexOf("\r\n") != -1) {
-				strReturn = "\r\n";
-				strParagraph = strParagraph.replaceAll("\r\n", "");
-			} else if (strParagraph.indexOf("\n") != -1) {
-				strReturn = "\n";
-				strParagraph = strParagraph.replaceAll("\n", "");
-			}
-
-			if (strParagraph.length() == 0) {
-				lines.add(strParagraph);
-			}
-			while (strParagraph.length() > 0) {
-				int nSize = mPaint.breakText(strParagraph, true, mVisibleWidth,
-						null);
-				lines.add(strParagraph.substring(0, nSize));
-				strParagraph = strParagraph.substring(nSize);
-				if (lines.size() >= mLineCount) {
-					break;
-				}
-			}
-			if (strParagraph.length() != 0) {
-				try {
-					m_mbBufEnd -= (strParagraph + strReturn)
-							.getBytes(m_strCharsetName).length;
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		return lines;
-	}
-
-	//得到上一页数据
-	protected void pageUp() {
-		if (m_mbBufBegin < 0)
-			m_mbBufBegin = 0;
-		Vector<String> lines = new Vector<String>();
-		String strParagraph = "";
-		while (lines.size() < mLineCount && m_mbBufBegin > 0) {
-			Vector<String> paraLines = new Vector<String>();
-			byte[] paraBuf = readParagraphBack(m_mbBufBegin);
-			m_mbBufBegin -= paraBuf.length;
-			try {
-				strParagraph = new String(paraBuf, m_strCharsetName);
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			strParagraph = strParagraph.replaceAll("\r\n", "");
-			strParagraph = strParagraph.replaceAll("\n", "");
-
-			if (strParagraph.length() == 0) {
-				//paraLines.add(strParagraph);
-			}
-			while (strParagraph.length() > 0) {
-				int nSize = mPaint.breakText(strParagraph, true, mVisibleWidth,
-						null);
-				paraLines.add(strParagraph.substring(0, nSize));
-				strParagraph = strParagraph.substring(nSize);
-			}
-			lines.addAll(0, paraLines);
-		}
-		while (lines.size() > mLineCount) {
-			try {
-				m_mbBufBegin += lines.get(0).getBytes(m_strCharsetName).length;
-				lines.remove(0);
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		m_mbBufEnd = m_mbBufBegin;
-		return;
-	}
-
-	//上一页
-	protected void prePage() throws IOException {
-		if (m_mbBufBegin <= 0) {
-			m_mbBufBegin = 0;
-			m_isfirstPage = true;
-			return;
-		} else
-			m_isfirstPage = false;
-		m_lines.clear();
-		pageUp();
-		m_lines = pageDown();
-	}
-
-	//下一页
-	public void nextPage() throws IOException {
-		if (m_mbBufEnd >= m_mbBufLen) {
-			m_islastPage = true;
-			return;
-		} else
-			m_islastPage = false;
-		m_lines.clear();
-		m_mbBufBegin = m_mbBufEnd;
-		m_lines = pageDown();
 	}
 
 	public void draw(Canvas c) {
@@ -427,10 +459,11 @@ public class BookPageFactory {
 		return m_mbBufEnd;
 	}
 	
-	public int getCurPostionBeg(){
+	public int getM_mbBufBegin() {
 		return m_mbBufBegin;
 	}
-	public void setBeginPos(int pos) {
+
+	public void setM_mbBufBegin(int pos) {
 		m_mbBufEnd = pos;
 		m_mbBufBegin = pos;
 	}
@@ -442,15 +475,21 @@ public class BookPageFactory {
 	public int getCurProgress(){
 		return curProgress;
 	}
-	public String getOneLine() {
-		return m_lines.get(0);
-	}
 	
 	public void changBackGround(int color) {
 		mPaint.setColor(color);
 	}
 	
-
+	public String getFirstLineText() {
+		if(m_lines.size() > 0) {
+			if(m_lines.get(0).trim().length() > 0) 
+				return m_lines.get(0);
+			else
+				return m_lines.get(1).trim().length() > 0 ? m_lines.get(1):m_lines.get(2);
+		}
+		return  "";
+	}
+	
 	public void setFontSize(int size) {
 		m_fontSize = size;
 		mPaint.setTextSize(size);

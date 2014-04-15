@@ -73,6 +73,8 @@ public class ReadBookActivity extends Activity {
 	private int whichSize=3;//当前的字体大小
 	private int whichBg=1;	//当前背景
 	private int txtProgress = 0;//当前阅读的进度
+	private String word = "";
+	private int begin = 0;
 	private int mCurPostion;
 
 	private DbHelper mDbHelper; 
@@ -143,7 +145,7 @@ public class ReadBookActivity extends Activity {
 					
 					//设置阅读属性
 					mPagefactory.setFontSize(Integer.parseInt(mFont[mSetup.getFontsize()]));
-					mPagefactory.setBeginPos(Integer.valueOf(mBook.bookmark));
+					mPagefactory.setM_mbBufBegin(Integer.valueOf(mBook.bookmark));
 					
 					int begin = m_mbBufLen*100/100;
 					
@@ -186,6 +188,8 @@ public class ReadBookActivity extends Activity {
 					if (mPageWidget.DragToRight()) {
 						try {
 							mPagefactory.prePage();
+							begin = mPagefactory.getM_mbBufBegin();// 获取当前阅读位置
+							word = mPagefactory.getFirstLineText();// 获取当前阅读位置的首行文字
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
@@ -197,6 +201,8 @@ public class ReadBookActivity extends Activity {
 					} else {
 						try {
 							mPagefactory.nextPage();
+							begin = mPagefactory.getM_mbBufBegin();// 获取当前阅读位置
+							word = mPagefactory.getFirstLineText();// 获取当前阅读位置的首行文字
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
@@ -329,7 +335,7 @@ public class ReadBookActivity extends Activity {
 						pos = 1;
 					}
 					//设置指定位置的开始读取位置
-					mPagefactory.setBeginPos(Integer.valueOf(pos));
+					mPagefactory.setM_mbBufBegin(Integer.valueOf(pos));
 					try {
 						mPagefactory.prePage();
 					} catch (IOException e) {
@@ -378,11 +384,11 @@ public class ReadBookActivity extends Activity {
 		//书签
 		case R.id.book_mark:
 			mMarkDBHelper = new BookMarkDBHelper(mContext);
-			final BookMark bookMark = new BookMark(mBook.bookname, mPagefactory.getOneLine(), mPagefactory.getCurPostionBeg());
+			final BookMark bookMark = new BookMark(mBook.bookname, word, mPagefactory.getM_mbBufBegin());
 			List<BookMark> markList = mMarkDBHelper.findMark(mBook.bookname);
 			if(null == markList) {
 				mMarkDBHelper.saveMark(bookMark);
-				Toast.makeText(mContext, "书签添加成功:"+mPagefactory.getCurPostionBeg()+":"+mPagefactory.getCurPostion(), 0).show();
+				Toast.makeText(mContext, "书签添加成功", 0).show();
 			} else {
 				LinearLayout markLayout = new LinearLayout(mContext);
 				markLayout.setOrientation(LinearLayout.VERTICAL);
@@ -401,7 +407,7 @@ public class ReadBookActivity extends Activity {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							mMarkDBHelper.saveMark(bookMark);
-							Toast.makeText(mContext, "书签添加成功:"+":"+mPagefactory.getCurPostion(), 1).show();
+							Toast.makeText(mContext, "书签添加成功", 1).show();
 						}
 					}).setNegativeButton("取消", new DialogInterface.OnClickListener() {
 					
@@ -418,6 +424,7 @@ public class ReadBookActivity extends Activity {
 			}
 			
 			break;
+		//设置
 		case R.id.setting:
 			Intent setIntent = new Intent(mContext, SettingActivity.class);
 			startActivity(setIntent);
@@ -461,7 +468,7 @@ public class ReadBookActivity extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			mPagefactory.setBeginPos(markList.get(position).getBegin());
+			mPagefactory.setM_mbBufBegin(markList.get(position).getBegin());
 			try {
 				mPagefactory.nextPage();
 			} catch (IOException e) {
@@ -522,11 +529,12 @@ public class ReadBookActivity extends Activity {
 	 */
 	private void setFontSize(int size){
 		mPagefactory.setFontSize(size);
-		int pos = mPagefactory.getCurPostionBeg();
+		int pos = mPagefactory.getM_mbBufBegin();
 		//重新设置开始位置
-		mPagefactory.setBeginPos(pos);
+		mPagefactory.setM_mbBufBegin(pos);
 		try {
 			mPagefactory.nextPage();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -578,7 +586,7 @@ public class ReadBookActivity extends Activity {
 					String pos = mCursor.getString(2);
 					String tmp = mCursor.getString(1);
 					 
-					mPagefactory.setBeginPos(Integer.valueOf(pos));
+					mPagefactory.setM_mbBufBegin(Integer.valueOf(pos));
 					try {
 						mPagefactory.prePage();
 					} catch (IOException e) {
