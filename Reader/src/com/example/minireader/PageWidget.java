@@ -91,7 +91,7 @@ public class PageWidget extends View {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : 计算拖拽点对应的拖拽脚
+	 *  计算拖拽点对应的拖拽脚
 	 */
 	public void calcCornerXY(float x, float y) {
 		if (x <= mWidth / 2)
@@ -109,8 +109,10 @@ public class PageWidget extends View {
 			mIsRTandLB = false;
 	}
 
+	/**
+	 * 触摸事件发生时进行 的动作,得到拖拽点的坐标值
+	 */
 	public boolean doTouchEvent(MotionEvent event) {
-		// TODO Auto-generated method stub
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
 			mTouch.x = event.getX();
 			mTouch.y = event.getY();
@@ -119,8 +121,6 @@ public class PageWidget extends View {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			mTouch.x = event.getX();
 			mTouch.y = event.getY();
-			// calcCornerXY(mTouch.x, mTouch.y);
-			// this.postInvalidate();
 		}
 		if (event.getAction() == MotionEvent.ACTION_UP) {
 			if (canDragOver()) {
@@ -132,12 +132,11 @@ public class PageWidget extends View {
 
 			this.postInvalidate();
 		}
-		// return super.onTouchEvent(event);
 		return true;
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : 求解直线P1P2和直线P3P4的交点坐标
+	 * 求解直线P1P2和直线P3P4的交点坐标
 	 */
 	public PointF getCross(PointF P1, PointF P2, PointF P3, PointF P4) {
 		PointF CrossP = new PointF();
@@ -161,12 +160,6 @@ public class PageWidget extends View {
 		mBezierControl2.x = mCornerX;
 		mBezierControl2.y = mMiddleY - (mCornerX - mMiddleX)
 				* (mCornerX - mMiddleX) / (mCornerY - mMiddleY);
-
-		// Log.i("hmg", "mTouchX  " + mTouch.x + "  mTouchY  " + mTouch.y);
-		// Log.i("hmg", "mBezierControl1.x  " + mBezierControl1.x
-		// + "  mBezierControl1.y  " + mBezierControl1.y);
-		// Log.i("hmg", "mBezierControl2.x  " + mBezierControl2.x
-		// + "  mBezierControl2.y  " + mBezierControl2.y);
 
 		mBezierStart1.x = mBezierControl1.x - (mCornerX - mBezierControl1.x)
 				/ 2;
@@ -197,12 +190,7 @@ public class PageWidget extends View {
 				mBezierControl2.x = mCornerX;
 				mBezierControl2.y = mMiddleY - (mCornerX - mMiddleX)
 						* (mCornerX - mMiddleX) / (mCornerY - mMiddleY);
-				// Log.i("hmg", "mTouchX --> " + mTouch.x + "  mTouchY-->  "
-				// + mTouch.y);
-				// Log.i("hmg", "mBezierControl1.x--  " + mBezierControl1.x
-				// + "  mBezierControl1.y -- " + mBezierControl1.y);
-				// Log.i("hmg", "mBezierControl2.x -- " + mBezierControl2.x
-				// + "  mBezierControl2.y -- " + mBezierControl2.y);
+
 				mBezierStart1.x = mBezierControl1.x
 						- (mCornerX - mBezierControl1.x) / 2;
 			}
@@ -219,16 +207,6 @@ public class PageWidget extends View {
 		mBezierEnd2 = getCross(mTouch, mBezierControl2, mBezierStart1,
 				mBezierStart2);
 
-		// Log.i("hmg", "mBezierEnd1.x  " + mBezierEnd1.x + "  mBezierEnd1.y  "
-		// + mBezierEnd1.y);
-		// Log.i("hmg", "mBezierEnd2.x  " + mBezierEnd2.x + "  mBezierEnd2.y  "
-		// + mBezierEnd2.y);
-
-		/*
-		 * mBeziervertex1.x 推导
-		 * ((mBezierStart1.x+mBezierEnd1.x)/2+mBezierControl1.x)/2 化简等价于
-		 * (mBezierStart1.x+ 2*mBezierControl1.x+mBezierEnd1.x) / 4
-		 */
 		mBeziervertex1.x = (mBezierStart1.x + 2 * mBezierControl1.x + mBezierEnd1.x) / 4;
 		mBeziervertex1.y = (2 * mBezierControl1.y + mBezierStart1.y + mBezierEnd1.y) / 4;
 		mBeziervertex2.x = (mBezierStart2.x + 2 * mBezierControl2.x + mBezierEnd2.x) / 4;
@@ -449,14 +427,12 @@ public class PageWidget extends View {
 					(int) (mBezierControl2.x - mMaxLength), leftx,
 					(int) (mBezierControl2.x), rightx);
 
-		// Log.i("hmg", "mBezierControl2.x   " + mBezierControl2.x
-		// + "  mBezierControl2.y  " + mBezierControl2.y);
 		mCurrentPageShadow.draw(canvas);
 		canvas.restore();
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : 绘制翻起页背面
+	 * 绘制翻起页背面
 	 */
 	private void drawCurrentBackArea(Canvas canvas, Bitmap bitmap) {
 		int i = (int) (mBezierStart1.x + mBezierControl1.x) / 2;

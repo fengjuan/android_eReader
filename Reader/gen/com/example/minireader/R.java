@@ -101,10 +101,10 @@ public final class R {
     }
     public static final class id {
         public static final int acceptButton=0x7f090037;
-        public static final int action_settings=0x7f09005a;
+        public static final int action_settings=0x7f09005b;
         public static final int annotType=0x7f090036;
-        public static final int background=0x7f09005c;
-        public static final int book_mark=0x7f09005f;
+        public static final int background=0x7f09005d;
+        public static final int book_mark=0x7f090060;
         public static final int btn_download=0x7f090018;
         public static final int btn_import_book=0x7f09004d;
         public static final int btn_note_cancel=0x7f09000b;
@@ -133,7 +133,7 @@ public final class R {
         public static final int et_note_title=0x7f09000e;
         public static final int file_list=0x7f090049;
         public static final int fl_book_imgtxt=0x7f090001;
-        public static final int fontsize=0x7f09005b;
+        public static final int fontsize=0x7f09005c;
         public static final int gallery_background=0x7f09004f;
         public static final int gridviewbar=0x7f090045;
         public static final int gv_book_shelf=0x7f090000;
@@ -145,8 +145,8 @@ public final class R {
         public static final int img_btn_local=0x7f090006;
         public static final int img_btn_online=0x7f090007;
         public static final int img_switcher_background=0x7f090050;
-        public static final int import_check=0x7f090059;
-        public static final int import_local_books=0x7f090056;
+        public static final int import_check=0x7f09005a;
+        public static final int import_local_books=0x7f090057;
         public static final int info=0x7f09003b;
         public static final int inkButton=0x7f09002b;
         public static final int linkButton=0x7f09001c;
@@ -158,8 +158,8 @@ public final class R {
         public static final int lv_note_list=0x7f090010;
         public static final int moreButton=0x7f090020;
         public static final int name=0x7f09004b;
-        public static final int note=0x7f09005e;
-        public static final int nowprogress=0x7f09005d;
+        public static final int note=0x7f09005f;
+        public static final int nowprogress=0x7f09005e;
         public static final int outlineButton=0x7f09001e;
         public static final int page=0x7f090048;
         public static final int pageNumber=0x7f09003a;
@@ -172,14 +172,15 @@ public final class R {
         public static final int searchText=0x7f090023;
         public static final int seek=0x7f090014;
         public static final int seekbar=0x7f090012;
-        public static final int select_all=0x7f090057;
-        public static final int select_cancel=0x7f090058;
-        public static final int setting=0x7f090060;
+        public static final int select_all=0x7f090058;
+        public static final int select_cancel=0x7f090059;
+        public static final int setting=0x7f090061;
         public static final int setting_seekbar_font_size=0x7f090053;
         public static final int setting_seekbar_scr_brightness=0x7f090054;
         public static final int setting_spinner_bg_color=0x7f090052;
         public static final int setting_spinner_font_color=0x7f090051;
         public static final int setting_textview_setting_prev=0x7f090055;
+        public static final int show=0x7f090056;
         public static final int strikeOutButton=0x7f09002a;
         public static final int switcher=0x7f090019;
         public static final int test_view=0x7f09003c;
@@ -217,6 +218,7 @@ public final class R {
         public static final int select_background=0x7f03000f;
         public static final int setting=0x7f030010;
         public static final int textentry=0x7f030011;
+        public static final int word_view=0x7f030012;
     }
     public static final class menu {
         public static final int book=0x7f080000;

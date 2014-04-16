@@ -99,10 +99,9 @@ public class BookShelfActivity extends Activity {
 				startActivity(intent);
 				
 			} else if(bookInfo.bookname.endsWith(".doc")){
-				Intent intent = new Intent(BookShelfActivity.this,WordReadActivity.class);
+				Intent intent = new Intent(BookShelfActivity.this,WordViewActivity.class);
 				intent.setAction(Intent.ACTION_VIEW);
-				Uri uri = Uri.parse("file:/" + bookInfo.url);
-				intent.setData(uri);
+				intent.putExtra("filePath", bookInfo.url);
 			
 				startActivity(intent);
 			} 

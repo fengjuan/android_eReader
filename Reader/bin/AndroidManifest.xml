@@ -26,7 +26,6 @@
             android:label="@string/title_activity_book" >
         </activity>
         
-        <activity android:name="com.example.minireader.WordReadActivity" ></activity>
         
         <activity android:name="com.example.minireader.online.WebViewActivity"></activity>
         
@@ -36,6 +35,7 @@
         
         <activity android:name="com.example.minireader.NoteListAcitvity"></activity>
          <activity android:name="com.example.minireader.SettingActivity"></activity>
+         <activity android:name="com.example.minireader.WordViewActivity"></activity>
         
         <activity android:name="com.artifex.mupdfdemo.MuPDFActivity"
             	android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
